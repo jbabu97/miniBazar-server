@@ -11,6 +11,10 @@ app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 4040;
 
+app.get('/', (req, res) => {
+  res.send('Hello from miniBazar')
+})
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.7dhhj.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 // console.log(uri);
 const client = new MongoClient(uri, {
