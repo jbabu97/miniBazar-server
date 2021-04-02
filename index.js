@@ -21,13 +21,42 @@ const client = new MongoClient(uri, {
 client.connect((err) => {
   const productCollection = client.db("miniBazar").collection("items");
   // console.log('db connected');
-  // const product = {name: 'Chal', quantity: '1 kg', price: 60}
+  
+  app.post("/addProduct", (req, res) => {
+    const newProduct = req.body;
+    productCollection.insertOne(newProduct).then((result) => {
+      // console.log("inserted count", result.insertedCount);
+      res.send(result.insertedCount > 0);
+      res.redirect('/')
+    });
+    // console.log("adding new product", newOrder);
+  });
 
   app.get('/products', (req, res) => {
     productCollection.find()
     .toArray((err, products) => {
       // console.log(products);
       res.send(products);
+    });
+  });
+
+  app.post("/addOrder", (req, res) => {
+    const newOrder = req.body;
+    console.log(newOrder);
+    productCollection.insertOne(newOrder).
+    then((result) => {
+      console.log("inserted count", result);
+      // res.send(result.insertedCount > 0);
+      // res.redirect('/')
+    });
+  });
+
+  app.get('/orders', (req, res) => {
+    console.log(req.query.email);
+    productCollection.find({email: req.query.email})
+    .toArray((err, orders) => {
+      // console.log(orders);
+      res.send(orders);
     });
   });
 
@@ -39,6 +68,14 @@ client.connect((err) => {
     });
   });
 
+  // app.get('/orders', (req, res) => {
+  //   productCollection.find({_id: ObjectId(req.params.productId)})
+  //   .toArray((err, orders) => {
+  //     // console.log(orders);
+  //     res.send(orders[0]);
+  //   });
+  // });
+
   app.get('/manageProducts', (req, res) => {
     productCollection.find()
     .toArray((err, manageProducts) => {
@@ -47,22 +84,15 @@ client.connect((err) => {
     });
   });
 
-  app.post("/addProduct", (req, res) => {
-    const newOrder = req.body;
-    productCollection.insertOne(newOrder).then((result) => {
-      // console.log("inserted count", result.insertedCount);
-      res.send(result.insertedCount > 0);
-    });
-    // console.log("adding new product", newOrder);
-  });
 
   app.delete('/deleteProduct/:id', (req, res) => {
     const deleteProduct = {_id: ObjectId(req.params.id)}
     console.log(deleteProduct);
     productCollection.deleteOne(deleteProduct)
     .then(result => {
-        console.log(result);
-        // res.send(result.deletedCount > 0)
+        // console.log(result);
+        res.send(result.deletedCount > 0)
+        // res.redirect('/manageProduct')
     })
 })
 
